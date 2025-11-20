@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: raushan
+data:
+  nginx.conf: |
+    events {}
+
+    http {
+        server {
+            listen 443 ssl;
+            server_name nginx.local;
+
+            ssl_certificate /etc/nginx/tls/tls.crt;
+            ssl_certificate_key /etc/nginx/tls/tls.key;
+
+            location / {
+                return 200 "Hello from HTTPS NodePort!\n";
+            }
+        }
+    }
