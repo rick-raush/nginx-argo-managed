@@ -18,18 +18,22 @@ spec:
       - name: nginx
         image: nginx:latest
         ports:
-        - containerPort: 80
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "250m"
-            memory: "256Mi"
-        volumeMounts:                    
-        - name: html-volume
-          mountPath: /usr/share/nginx/html # <-- Nginx serves files from here
-      volumes:                            
-      - name: html-volume
+        - containerPort: 443  # Serve HTTPS inside container
+        volumeMounts:
+        # TLS certificate + key
+        - name: tls
+          mountPath: /etc/nginx/tls
+          readOnly: true
+        # NGINX config
+        - name: conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      volumes:
+      # TLS Secret
+      - name: tls
+        secret:
+          secretName: nginx-tls-secret
+      # ConfigMap for nginx.conf
+      - name: conf
         configMap:
-          name: nginx-html                # <-- ConfigMap name
+          name: nginx-conf
