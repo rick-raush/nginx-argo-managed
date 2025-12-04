@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: nginx-virtualservice
+  namespace: raushan
+
+spec:
+  gateways:   
+  - nginx-gateway   # The Gateway this VS applies to (must be deployed and configured to listen on 443)
+ 
+  hosts:
+  - "nginx.local"   # The hostnames this VS handles
+
+  http:     # This section handles traffic that ARRIVED at the Gateway (443) but is now DECRYPTED (HTTP)
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination: 
+        host: nginx-service-nodeport.raushan.svc.cluster.local    # Use the standard Kubernetes Service name
+        port: 
+          number: 443   # Route to the backend service's HTTP port (usually 80)
+      weight: 100
